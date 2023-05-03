@@ -1,54 +1,33 @@
-﻿using AngleSharp.Dom;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using YoutubeExplode;
-using YoutubeExplode.Videos;
+﻿using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
 
 namespace YoutubeExplodes
 {
-    internal class YoutubeReceiver : Command
+    internal class YoutubeReceiver : ICommands
     {
         private string _url;
-        public override void GetVideoDescription(string url)
+        private YoutubeClient _youtubeClient;
+        public YoutubeReceiver(string url, YoutubeClient youtubeClient)
         {
             _url = url;
+            _youtubeClient = youtubeClient;
+        }
+        public void GetVideoDescription()
+        {
+            var video = _youtubeClient.Videos.GetAsync(_url);
+            var title = video.Result.Title;
+            var description = video.Result.Description;
         }
 
-        private async Task StreamManifest()
+        public async Task Download()
         {
-            var youtube = new YoutubeClient();
-            var videoId = VideoId.Parse(_url);
-            var streamManifest = await youtube.Videos.Streams.GetManifestAsync(videoId);
-            var streamInfo = streamManifest.GetMuxedStreams().TryGetWithHighestVideoQuality();
-            if (streamInfo is null)
-            {
-                // Available streams vary depending on the video and it's possible
-                // there may not be any muxed streams at all.
-                // See the readme to learn how to handle adaptive streams.
-                Console.Error.WriteLine("В этом видео нет мультиплексированных потоков.");
-                return;
-            }
-
-            // Download the stream
-            var fileName = $"{videoId}.{streamInfo.Container.Name}";
-
-            Console.Write(
-                $"Загрузка потока: {streamInfo.VideoQuality.Label} / {streamInfo.Container.Name}... "
-            );
-                await youtube.Videos.Streams.DownloadAsync(streamInfo, fileName);
-
-            Console.WriteLine("Выполнено");
-            Console.WriteLine($"Видео сохранено '{fileName}'");
+            var streamManifest = await _youtubeClient.Videos.Streams.GetManifestAsync(_url);
+            var streamInfo = (MuxedStreamInfo)streamManifest.Mu
         }
 
-
-        public override void VideoDownload(string url)
+        void ICommands.VideoDownload()
         {
-            throw new NotImplementedException();
+            _ = Download();
         }
     }
 }
