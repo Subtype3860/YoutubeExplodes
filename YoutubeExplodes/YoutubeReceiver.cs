@@ -30,8 +30,6 @@ namespace YoutubeExplodes
                 Console.Error.WriteLine("В этом видео нет мультиплексированных потоков.");
                 return;
             }
-
-            // Download the stream
             Console.Write(
                 $"Загрузка потока: {streamInfo.VideoQuality.Label} / {streamInfo.Container.Name}... "
             );
