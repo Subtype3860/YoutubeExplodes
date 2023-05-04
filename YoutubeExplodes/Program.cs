@@ -5,11 +5,13 @@ namespace YoutubeExplode;
 
 public class Program
 {
-    public static void Main()
+    public static async Task Main()
     {
         var yotubeClient = new YoutubeClient();
-        ICommands comm = new YoutubeReceiver("https://youtu.be/QnavkXE-jio", yotubeClient);
+        Console.WriteLine("Укажите URL видео");
+        var url = Console.ReadLine();
+        ICommands comm = new YoutubeReceiver(url!, yotubeClient);
         comm.GetVideoDescription();
-        comm.VideoDownload();
+        await comm.VideoDownload();
     }
 }

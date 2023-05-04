@@ -5,8 +5,10 @@ namespace YoutubeExplodes
 {
     public interface ICommands
     {
-        public void GetVideoDescription();
-        public void VideoDownload();
-        
+        public void GetVideoDescription() { }
+        public Task VideoDownload()
+        {
+            return Task.CompletedTask;
+        }
     }
 }
